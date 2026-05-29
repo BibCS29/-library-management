@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Issue History</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="history-header">
+        <h1>📋 Complete Issue & Return History</h1>
+        <a href="/" class="back-btn-header">← Back to Dashboard</a>
+      </div>
+
+      {% if history %}
+        <div class="stats-section">
+          <div class="stat-card">
+            <div class="stat-number">{{ history|length }}</div>
+            <div class="stat-label">Total Records</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ history|selectattr('status', 'equalto', 'Active')|list|length }}</div>
+            <div class="stat-label">Active Issues</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ history|selectattr('status', 'equalto', 'Returned')|list|length }}</div>
+            <div class="stat-label">Returned</div>
+          </div>
+        </div>
+
+        <div class="history-filters">
+          <button class="filter-btn active" onclick="filterHistory('all')">All Records</button>
+          <button class="filter-btn" onclick="filterHistory('Active')">Active Issues</button>
+          <button class="filter-btn" onclick="filterHistory('Returned')">Returned</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="history-table-full">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Book Title</th>
+                <th>Issued To</th>
+                <th>Issue Date</th>
+                <th>Expected Return</th>
+                <th>Returned By</th>
+                <th>Actual Return</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in history %}
+              <tr class="history-row" data-status="{{ record.status }}">
+                <td class="row-number">{{ loop.index }}</td>
+                <td><strong>{{ record.book_title }}</strong></td>
+                <td>{{ record.issued_to }}</td>
+                <td>{{ record.issue_date }}</td>
+                <td><span class="date-cell">{{ record.expected_return_date }}</span></td>
+                <td>
+                  {% if record.returned_by %}
+                    <span class="badge-person">{{ record.returned_by }}</span>
+                  {% else %}
+                    <span class="badge-pending">---</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if record.actual_return_date %}
+                    <span class="date-returned">{{ record.actual_return_date }}</span>
+                  {% else %}
+                    <span class="badge-pending">Not Returned</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="status-badge {% if record.status == 'Active' %}status-active{% else %}status-returned{% endif %}">
+                    {{ record.status }}
+                  </span>
+                </td>
+                <td>
+                  <a href="/delete_history/{{ record.id }}" class="btn-delete-small" onclick="return confirm('Delete this record?');">
+                    🗑️ Delete
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state-large">
+          <p>📭 No history records yet</p>
+          <a href="/" class="btn-go-home">Go to Dashboard</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <script>
+      function filterHistory(status) {
+        const rows = document.querySelectorAll('.history-row');
+        const buttons = document.querySelectorAll('.filter-btn');
+        
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        rows.forEach(row => {
+          if (status === 'all' || row.dataset.status === status) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

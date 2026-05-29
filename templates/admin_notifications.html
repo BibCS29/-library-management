@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block title %}Login Notifications - Library
+Management System{% endblock %} {% block content %}
+<h1>Login Notifications</h1>
+
+<form
+  method="POST"
+  action="{{ url_for('admin_notifications') }}"
+  enctype="multipart/form-data"
+  style="max-width: 700px; margin-bottom: 30px"
+>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required maxlength="120" />
+  </div>
+
+  <div class="form-group">
+    <label for="message">Message</label>
+    <textarea id="message" name="message" maxlength="1000"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="attachment">PDF or Image</label>
+    <input
+      type="file"
+      id="attachment"
+      name="attachment"
+      accept=".pdf,.png,.jpg,.jpeg,.gif,.webp"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Publish Notification</button>
+</form>
+
+<h2>Published Notifications</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Title</th>
+      <th>Message</th>
+      <th>Attachment</th>
+      <th>Created</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for notice in notices %}
+    <tr>
+      <td>{{ 'Active' if notice['is_active'] else 'Hidden' }}</td>
+      <td>{{ notice['title'] }}</td>
+      <td style="white-space: pre-wrap; max-width: 320px">
+        {{ notice['message'] or '-' }}
+      </td>
+      <td>
+        {% if notice['file_path'] %}
+       <a href="{{ url_for('view_notice_file', filename=notice['file_path'].split('/')[-1]) }}" target="_blank"></a>
+          {{ notice['file_name'] }}
+        </a>
+        {% else %} - {% endif %}
+      </td>
+      <td>{{ notice['created_at'] }}</td>
+      <td>
+        <form
+          method="POST"
+          action="{{ url_for('toggle_admin_notification', notice_id=notice['id']) }}"
+          style="display: inline"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-secondary">
+            {{ 'Hide' if notice['is_active'] else 'Show' }}
+          </button>
+        </form>
+        <form
+          method="POST"
+          action="{{ url_for('delete_admin_notification', notice_id=notice['id']) }}"
+          style="display: inline"
+          onsubmit="return confirm('Delete this notification?');"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" style="text-align: center; color: #999">
+        No notifications yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

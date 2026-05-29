@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Issue Book</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="form-container">
+      <div class="form-header">
+        <h2>📤 Issue Book</h2>
+        <a href="/" class="back-btn">← Back</a>
+      </div>
+
+      <div class="book-details">
+        <h3>Book Details</h3>
+        <p><strong>📖 Title:</strong> {{ book.title }}</p>
+        <p><strong>✍️ Author:</strong> {{ book.author }}</p>
+      </div>
+
+      <form method="POST" class="issue-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+          <label for="issued_to">Issued To (Student/Person Name) *</label>
+          <input
+            type="text"
+            id="issued_to"
+            name="issued_to"
+            placeholder="Enter name of person receiving the book"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="issue_date">Issue Date</label>
+            <input
+              type="date"
+              id="issue_date"
+              name="issue_date"
+              value="{{ today }}"
+            />
+            <small>Leave empty for today</small>
+          </div>
+
+          <div class="form-group">
+            <label for="return_date">Expected Return Date</label>
+            <input
+              type="date"
+              id="return_date"
+              name="return_date"
+              value="{{ return_date }}"
+            />
+            <small>Leave empty for 14 days from issue date</small>
+          </div>
+        </div>
+
+        <div class="form-note">
+          ⚠️ By default, books are issued for 14 days. You can customize both
+          dates above.
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Issue Book</button>
+          <a href="/" class="btn-cancel">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Set default dates
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("issue_date").value = today;
+
+      const returnDate = new Date();
+      returnDate.setDate(returnDate.getDate() + 14);
+      document.getElementById("return_date").value = returnDate
+        .toISOString()
+        .split("T")[0];
+
+      // Update return date when issue date changes
+      document
+        .getElementById("issue_date")
+        .addEventListener("change", function () {
+          const issueDate = new Date(this.value);
+          const calcReturnDate = new Date(issueDate);
+          calcReturnDate.setDate(calcReturnDate.getDate() + 14);
+          document.getElementById("return_date").value = calcReturnDate
+            .toISOString()
+            .split("T")[0];
+        });
+    </script>
+  </body>
+</html>

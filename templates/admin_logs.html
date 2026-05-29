@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block title %}Audit Logs - Library Management
+System{% endblock %} {% block content %}
+<h1>Audit Logs</h1>
+
+<p style="margin-bottom: 20px; color: #666">Showing last 100 activities</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>User</th>
+      <th>Action</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+      <td>{{ log['timestamp'] }}</td>
+      <td>{{ log['username'] or 'System' }}</td>
+      <td>{{ log['action'].replace('_', ' ').title() }}</td>
+      <td>{{ log['details'] or '-' }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="4" style="text-align: center; color: #999">No logs</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

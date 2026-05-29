@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Book</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="form-container">
+      <div class="form-header">
+        <h2>📖 Add New Book</h2>
+        <a href="/" class="back-btn">← Back</a>
+      </div>
+
+      <div class="form-note">
+        ℹ️ Add a new book to your library. You can issue it later to students or
+        staff.
+      </div>
+
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+          <label for="title">Book Title *</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Enter the book title"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="author">Author Name *</label>
+          <input
+            type="text"
+            id="author"
+            name="author"
+            placeholder="Enter the author's name"
+            required
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Add Book</button>
+          <a href="/" class="btn-cancel">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

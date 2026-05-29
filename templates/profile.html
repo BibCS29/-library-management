@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Profile - Library Management System{% endblock %}
+{% block content %}
+<h1>Profile</h1>
+
+{% if not can_edit %}
+<div class="error">
+  Your profile is locked after one saved update. Ask an admin to allow editing again.
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('profile') }}" style="max-width: 800px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
+    
+    <div class="form-group">
+      <label for="full_name">Name</label>
+      <input type="text" id="full_name" name="full_name" value="{{ (form.full_name if form else user['full_name']) or '' }}" required {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="department">Department</label>
+      <input type="text" id="department" name="department" value="{{ (form.department if form else user['department']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="contact_number">Contact Number</label>
+      <input type="text" id="contact_number" name="contact_number" value="{{ (form.contact_number if form else user['contact_number']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender" {% if not can_edit %}disabled{% endif %}>
+        {% set selected_gender = (form.gender if form else user['gender']) or '' %}
+        <option value="">Select</option>
+        <option value="Female" {% if selected_gender == "Female" %}selected{% endif %}>Female</option>
+        <option value="Male" {% if selected_gender == "Male" %}selected{% endif %}>Male</option>
+        <option value="Other" {% if selected_gender == "Other" %}selected{% endif %}>Other</option>
+        <option value="Prefer not to say" {% if selected_gender == "Prefer not to say" %}selected{% endif %}>Prefer not to say</option>
+      </select>
+    </div>
+
+    {% if user['role'] == 'Student' %}
+    <div class="form-group">
+      <label for="programme">Programme</label>
+      <input type="text" id="programme" name="programme" value="{{ (form.programme if form else user['programme']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="semester">Semester</label>
+      <input type="text" id="semester" name="semester" value="{{ (form.semester if form else user['semester']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="academic_year">Academic Year</label>
+      <input type="text" id="academic_year" name="academic_year" value="{{ (form.academic_year if form else user['academic_year']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="caste">Caste</label>
+      <input type="text" id="caste" name="caste" value="{{ (form.caste if form else user['caste']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+    {% endif %}
+
+    {% if user['role'] == 'Admin' %}
+    <div class="form-group">
+      <label for="grade">Grade</label>
+      <input type="text" id="grade" name="grade" value="{{ (form.grade if form else user['programme']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ (form.email if form else user['semester']) or '' }}" {% if not can_edit %}disabled{% endif %} />
+    </div>
+    {% endif %}
+    
+  </div>
+
+  <div class="form-group">
+    {% if can_edit %}
+    <button type="submit" class="btn btn-primary">Save Profile</button>
+    {% endif %}
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back</a>
+  </div>
+</form>
+{% endblock %}

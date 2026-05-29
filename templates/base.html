@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Library Management System{% endblock %}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        animation: pageEnter 1s ease both;
+        will-change: opacity, transform;
+      }
+
+      @keyframes pageEnter {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      body.page-leaving .navbar,
+      body.page-leaving .container {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+
+      .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 15px 30px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-size: 24px;
+        font-weight: bold;
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .navbar-menu {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .navbar-menu a {
+        color: #333;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease,
+          transform 0.3s ease;
+      }
+
+      .navbar-menu a:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .navbar-menu .logout-btn {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .navbar-menu .logout-btn:hover {
+        background: #c0392b;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      h1,
+      h2 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .error {
+        background: #ffe6e6;
+        color: #c0392b;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c0392b;
+      }
+
+      .success {
+        background: #e6ffe6;
+        color: #27ae60;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border-left: 4px solid #27ae60;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="date"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      input[type="date"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      .badge {
+        display: inline-block;
+        min-width: 20px;
+        margin-left: 6px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: #e74c3c;
+        color: white;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease,
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        will-change: transform;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+      }
+
+      .btn-secondary {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #7f8c8d;
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c0392b;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        padding: 12px;
+        text-align: left;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:hover {
+        background: #f9f9f9;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body,
+        body.page-leaving .navbar,
+        body.page-leaving .container,
+        .btn,
+        .navbar-menu a {
+          animation: none;
+          transition: none;
+        }
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .stat-card h3 {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .stat-card .number {
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    {% if session.get('user_id') %}
+    <div class="navbar">
+      <a href="/" class="navbar-brand">📚 Library System</a>
+      <div class="navbar-menu">
+        <span
+          >Welcome, <strong>{{ current_display_name }}</strong> ({{
+          session.get('role') }})</span
+        >
+        {% if session.get('role') == 'Admin' %}
+        <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+        <a href="{{ url_for('admin_users') }}">Users</a>
+        <a href="{{ url_for('admin_books') }}">Books</a>
+        <a href="{{ url_for('admin_book_requests') }}">Requests</a>
+        <a href="{{ url_for('admin_notifications') }}">Notifications</a>
+        <a href="{{ url_for('admin_messages') }}"
+          >Messages {% if unread_admin_messages %}<span class="badge"
+            >{{ unread_admin_messages }}</span
+          >{% endif %}</a
+        >
+        <a href="{{ url_for('admin_logs') }}">Logs</a>
+        {% else %}
+        <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('student_books') }}">Browse Books</a>
+        <a href="{{ url_for('student_message_admin') }}">Message Admin</a>
+        {% endif %}
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="container">
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %} {% if success %}
+      <div class="success">{{ success }}</div>
+      {% endif %} {% block content %}{% endblock %}
+    </div>
+
+    <script>
+      // Disable browser autocomplete for sensitive fields in developer tools
+      document.addEventListener("DOMContentLoaded", function () {
+        const sensitiveInputs = document.querySelectorAll(
+          'input[type="password"]',
+        );
+        sensitiveInputs.forEach((input) => {
+          input.setAttribute("autocomplete", "new-password");
+        });
+      });
+
+      // Disable right-click context menu
+      document.addEventListener("contextmenu", function (e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+          e.preventDefault();
+        }
+      });
+
+      // Prevent developer tools access (basic protection)
+      const devtools = /(\d+)px/;
+      setInterval(function () {
+        if (devtools.test(window.outerHeight - window.innerHeight)) {
+          console.clear();
+        }
+      }, 200);
+
+      document.addEventListener("click", function (event) {
+        const link = event.target.closest("a[href]");
+        if (!link || link.target || link.hasAttribute("download")) {
+          return;
+        }
+
+        const url = new URL(link.href, window.location.href);
+        if (url.origin !== window.location.origin || url.hash) {
+          return;
+        }
+
+        event.preventDefault();
+        document.body.classList.add("page-leaving");
+        window.setTimeout(function () {
+          window.location.href = link.href;
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>

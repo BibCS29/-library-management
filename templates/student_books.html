@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block title %}Browse Books - Library Management
+System{% endblock %} {% block content %}
+<h1>Available Books</h1>
+
+{% if request_block_message %}
+<div class="error">{{ request_block_message }}</div>
+{% endif %}
+
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  "
+>
+  {% for book in books %}
+  <div
+    style="
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      background: #f9f9f9;
+    "
+  >
+    <h3 style="color: #667eea; margin-bottom: 10px">{{ book['title'] }}</h3>
+    <p style="margin: 5px 0"><strong>Author:</strong> {{ book['author'] }}</p>
+    <p style="margin: 5px 0">
+      <span
+        style="
+          display: inline-block;
+          padding: 5px 10px;
+          border-radius: 3px;
+          background: #d4edda;
+          color: #155724;
+        "
+        >{{ book['status'] }}</span
+      >
+    </p>
+    {% if can_request %}
+    <a
+      href="{{ url_for('student_issue_book', book_id=book['id']) }}"
+      class="btn btn-primary"
+      style="margin-top: 15px; display: inline-block"
+      >Apply for This Book</a
+    >
+    {% else %}
+    <button class="btn btn-secondary" style="margin-top: 15px" disabled>
+      Apply for This Book
+    </button>
+    {% endif %}
+  </div>
+  {% else %}
+  <p style="grid-column: 1/-1; text-align: center; color: #999">
+    No books available
+  </p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% block title %}Admin Messages - Library Management
+System{% endblock %} {% block content %}
+<h1>Message Box</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Student</th>
+      <th>Subject</th>
+      <th>Message</th>
+      <th>Reply</th>
+      <th>Sent</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for message in messages %}
+    <tr>
+      <td>
+        <span
+          style="padding: 5px 10px; border-radius: 3px; 
+                    {% if message['status'] == 'Unread' %}background: #fff3cd; color: #856404;
+                    {% elif message['status'] == 'Replied' %}background: #d1ecf1; color: #0c5460;
+                    {% else %}background: #d4edda; color: #155724;{% endif %}"
+        >
+          {{ message['status'] }}
+        </span>
+      </td>
+      <td>{{ message['student_username'] }}</td>
+      <td>{{ message['subject'] }}</td>
+      <td style="white-space: pre-wrap; max-width: 300px">
+        {{ message['message'] }}
+      </td>
+      <td style="min-width: 260px">
+        {% if message['admin_reply'] %}
+        <div style="white-space: pre-wrap">{{ message['admin_reply'] }}</div>
+        <small style="color: #777">Replied {{ message['replied_at'] }}</small>
+        {% else %}
+        <form
+          method="POST"
+          action="{{ url_for('reply_admin_message', message_id=message['id']) }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <textarea
+            name="reply"
+            required
+            maxlength="1000"
+            style="min-height: 90px"
+          ></textarea>
+          <button type="submit" class="btn btn-primary">Reply</button>
+        </form>
+        {% endif %}
+      </td>
+      <td>{{ message['created_at'] }}</td>
+      <td>
+        {% if message['status'] == 'Unread' %}
+        <form
+          method="POST"
+          action="{{ url_for('mark_admin_message_read', message_id=message['id']) }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-secondary">Mark Read</button>
+        </form>
+        {% else %}
+        <span style="color: #999">{{ message['read_at'] or '-' }}</span>
+        {% endif %}
+
+        <form
+          method="POST"
+          action="{{ url_for('delete_admin_message', message_id=message['id']) }}"
+          style="display: inline"
+          onsubmit="return confirm('Delete this student message?');"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-danger" style="margin-left: 8px">
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+
+    {% else %}
+    <tr>
+      <td colspan="7" style="text-align: center; color: #999">
+        No student messages yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

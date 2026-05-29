@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block title %}Return Book - Library Management
+System{% endblock %} {% block content %}
+<h1>Request Return</h1>
+
+<div style="max-width: 500px">
+  <div
+    style="
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    "
+  >
+    <h2>{{ book['title'] }}</h2>
+    <p><strong>Author:</strong> {{ book['author'] }}</p>
+    <p><strong>Issued on:</strong> {{ book['issue_date'] }}</p>
+    <p><strong>Due for return:</strong> {{ book['return_date'] }}</p>
+  </div>
+
+  <form
+    method="POST"
+    action="{{ url_for('student_return_book', book_id=book['id']) }}"
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+      <p
+        style="
+          background: #fff3cd;
+          padding: 15px;
+          border-radius: 5px;
+          border-left: 4px solid #ffc107;
+        "
+      >
+        Submit this return request after handing the book back to the library.
+        The book will be marked returned only after admin confirmation.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+      <button type="submit" class="btn btn-primary">Request Return</button>
+      <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary"
+        >Cancel</a
+      >
+    </div>
+  </form>
+</div>
+{% endblock %}

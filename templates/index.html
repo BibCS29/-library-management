@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library Management System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📚 Library Management System</h1>
+        <div class="nav-links">
+          <a href="#active-issues" class="nav-link">Active Issues</a>
+          <a href="#return-history" class="nav-link">Return History</a>
+          <a href="/history" class="nav-link" target="_blank">Full History</a>
+          <a href="#available-books" class="nav-link">Available Books</a>
+        </div>
+      </div>
+
+      <!-- ACTIVE ISSUES SECTION -->
+      <div class="section" id="active-issues">
+        <h2>📤 Currently Issued Books</h2>
+        {% if active_issues %}
+        <div class="table-wrapper">
+          <table class="issues-table">
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Issued To</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Days Left</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for issue in active_issues %}
+              <tr>
+                <td><strong>{{ issue.book_title }}</strong></td>
+                <td>{{ issue.issued_to }}</td>
+                <td>
+                  <span class="badge-person">{{ issue.issued_to }}</span>
+                </td>
+                <td>
+                  <span class="date">{{ issue.issue_date }}</span>
+                </td>
+                <td>
+                  <span class="date due">{{ issue.expected_return_date }}</span>
+                </td>
+                <td>
+                  <span class="days-left">N/A</span>
+                </td>
+                <td>
+                  <a href="/return/{{ issue.book_id }}" class="btn-return"
+                    >Return</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <p>✅ All books are available!</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- RETURN HISTORY SECTION -->
+      <div class="section" id="return-history">
+        <h2>📥 Recently Returned Books</h2>
+        {% if return_history %}
+        <div class="table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Issued To</th>
+                <th>Returned By</th>
+                <th>Issue Date</th>
+                <th>Return Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in return_history %}
+              <tr>
+                <td><strong>{{ record.book_title }}</strong></td>
+                <td>{{ record.issued_to }}</td>
+                <td>
+                  <span class="badge-returned"
+                    >{{ record.returned_by if record.returned_by else '---'
+                    }}</span
+                  >
+                </td>
+                <td>{{ record.issue_date }}</td>
+                <td>
+                  <span class="date returned"
+                    >{{ record.actual_return_date if record.actual_return_date
+                    else '---' }}</span
+                  >
+                </td>
+                <td>
+                  <a
+                    href="/delete_history/{{ record.id }}"
+                    class="btn-delete-small"
+                    onclick="return confirm('Delete this record?');"
+                    >Delete</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <p>No returned books yet</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- AVAILABLE BOOKS SECTION -->
+      <div class="section" id="available-books">
+        <div class="section-header">
+          <h2>📚 Available Books</h2>
+          <a href="/add" class="btn-add">+ Add New Book</a>
+        </div>
+
+        {% if books %}
+        <div class="books-grid">
+          {% for book in books %}
+          <div
+            class="book-card {% if book.status == 'Available' %}available{% else %}issued{% endif %}"
+          >
+            <div class="book-status">
+              <span
+                class="status-badge {% if book.status == 'Available' %}status-available{% else %}status-issued{% endif %}"
+              >
+                {{ book.status }}
+              </span>
+            </div>
+            <div class="book-content">
+              <h3>{{ book.title }}</h3>
+              <p class="author">by {{ book.author }}</p>
+
+              {% if book.status == 'Issued' %}
+              <div class="book-issued-info">
+                <p><strong>Issued to:</strong> {{ book.issued_to }}</p>
+                <p><strong>Due:</strong> {{ book.return_date }}</p>
+              </div>
+              {% endif %}
+            </div>
+            <div class="book-actions">
+              {% if book.status == 'Available' %}
+              <a href="/issue/{{ book.id }}" class="btn-issue">Issue Book</a>
+              {% else %}
+              <a href="/return/{{ book.id }}" class="btn-return">Return Book</a>
+              {% endif %}
+              <a
+                href="/delete/{{ book.id }}"
+                class="btn-delete"
+                onclick="return confirm('Delete this book?');"
+                >Delete</a
+              >
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <p>No books in the library yet. <a href="/add">Add a book</a></p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

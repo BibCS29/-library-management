@@ -1,0 +1,111 @@
+{% extends "base.html" %} {% block title %}Book Requests - Library Management
+System{% endblock %} {% block content %}
+<h1>Book Requests</h1>
+
+<h2>Pending Issue Requests</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Book</th>
+      <th>Author</th>
+      <th>Requested</th>
+      <th>Expected Return</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for request_item in requests %}
+    <tr>
+      <td>{{ request_item['student_username'] }}</td>
+      <td>{{ request_item['title'] }}</td>
+      <td>{{ request_item['author'] }}</td>
+      <td>{{ request_item['request_date'] }}</td>
+      <td>{{ request_item['expected_return_date'] }}</td>
+      <td>
+        <span
+          style="padding: 5px 10px; border-radius: 3px;
+                    {% if request_item['status'] == 'Pending' %}background: #fff3cd; color: #856404;
+                    {% elif request_item['status'] == 'Approved' %}background: #d1ecf1; color: #0c5460;
+                    {% elif request_item['status'] == 'Returned' %}background: #d4edda; color: #155724;
+                    {% else %}background: #f8d7da; color: #721c24;{% endif %}"
+        >
+          {{ request_item['status'] }}
+        </span>
+      </td>
+      <td>
+        {% if request_item['status'] == 'Pending' %}
+        <form
+          method="POST"
+          action="{{ url_for('approve_book_request', request_id=request_item['id']) }}"
+          style="display: inline"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-primary">Approve</button>
+        </form>
+        <form
+          method="POST"
+          action="{{ url_for('reject_book_request', request_id=request_item['id']) }}"
+          style="display: inline"
+          onsubmit="return confirm('Reject this request?');"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-danger">Reject</button>
+        </form>
+        {% else %}
+        <span style="color: #999">{{ request_item['admin_action_at'] or '-' }}</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="7" style="text-align: center; color: #999">
+        No book requests yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2 style="margin-top: 35px">Pending Return Confirmations</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Book</th>
+      <th>Author</th>
+      <th>Issued</th>
+      <th>Expected Return</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for return_item in pending_returns %}
+    <tr>
+      <td>{{ return_item['issued_to'] }}</td>
+      <td>{{ return_item['book_title'] }}</td>
+      <td>{{ return_item['author'] }}</td>
+      <td>{{ return_item['issue_date'] }}</td>
+      <td>{{ return_item['expected_return_date'] }}</td>
+      <td>
+        <form
+          method="POST"
+          action="{{ url_for('confirm_book_return', history_id=return_item['id']) }}"
+          onsubmit="return confirm('Confirm this returned book?');"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-primary">Confirm Return</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" style="text-align: center; color: #999">
+        No pending returns
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

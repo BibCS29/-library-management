@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Return Book</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="form-container">
+      <div class="form-header">
+        <h2>📥 Return Book</h2>
+        <a href="/" class="back-btn">← Back</a>
+      </div>
+
+      <div class="return-details">
+        <h3>Book Information</h3>
+        <p><strong>📖 Title:</strong> {{ book.title }}</p>
+        <p><strong>✍️ Author:</strong> {{ book.author }}</p>
+        <p>
+          <strong>📌 Issued To:</strong>
+          <span class="badge-person">{{ book.issued_to }}</span>
+        </p>
+        <p><strong>📅 Issue Date:</strong> {{ book.issue_date }}</p>
+        <p>
+          <strong>⏳ Due Date:</strong>
+          <span class="due-date">{{ book.return_date }}</span>
+        </p>
+      </div>
+
+      <form method="POST" class="return-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+          <label for="returned_by">Returned By (Name) *</label>
+          <input
+            type="text"
+            id="returned_by"
+            name="returned_by"
+            placeholder="Who is returning this book?"
+            required
+          />
+          <small>Enter the name of the person returning the book</small>
+        </div>
+
+        <div class="form-note">
+          ℹ️ Return Date will be recorded as: <strong id="return-time"></strong>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-return-confirm">
+            Confirm Return
+          </button>
+          <a href="/" class="btn-cancel">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Show current date/time
+      const now = new Date();
+      document.getElementById("return-time").textContent = now.toLocaleString();
+    </script>
+  </body>
+</html>

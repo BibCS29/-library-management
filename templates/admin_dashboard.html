@@ -1,0 +1,98 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard - Library Management
+System{% endblock %} {% block content %}
+<h1>Admin Dashboard</h1>
+
+<div class="stats">
+  <div class="stat-card">
+    <h3>Total Books</h3>
+    <div class="number">{{ books_count }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Registered Users</h3>
+    <div class="number">{{ users_count }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Active Issues</h3>
+    <div class="number">{{ active_issues }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Unread Messages</h3>
+    <div class="number">{{ unread_messages }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Pending Requests</h3>
+    <div class="number">{{ pending_requests }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Pending Returns</h3>
+    <div class="number">{{ pending_returns }}</div>
+  </div>
+</div>
+
+<h2>Quick Actions</h2>
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  "
+>
+  <a href="{{ url_for('admin_books') }}" class="btn btn-primary"
+    >Manage Books</a
+  >
+  <a href="{{ url_for('admin_users') }}" class="btn btn-primary"
+    >Manage Users</a
+  >
+  <a href="{{ url_for('admin_logs') }}" class="btn btn-primary"
+    >View Audit Logs</a
+  >
+  <a href="{{ url_for('admin_messages') }}" class="btn btn-primary"
+    >Open Message Box</a
+  >
+  <a href="{{ url_for('admin_book_requests') }}" class="btn btn-primary"
+    >Book Requests</a
+  >
+  <a href="{{ url_for('admin_notifications') }}" class="btn btn-primary"
+    >Login Notifications</a
+  >
+</div>
+
+<h2>Recent Activities</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>User</th>
+      <th>Action</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in recent_logs %}
+    <tr>
+      <td>{{ log['timestamp'] }}</td>
+      <td>{{ log['username'] or 'System' }}</td>
+      <td>{{ log['action'].replace('_', ' ').title() }}</td>
+      <td>{{ log['details'] or '-' }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="4" style="text-align: center; color: #999">
+        No activities yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  // Disable developer tools for sensitive admin panel
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+      e.preventDefault();
+      alert("Developer tools are disabled for security.");
+    }
+  });
+</script>
+{% endblock %}

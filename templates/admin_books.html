@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}Manage Books - Library Management
+System{% endblock %} {% block content %}
+<h1>Manage Books</h1>
+
+<a
+  href="{{ url_for('admin_add_book') }}"
+  class="btn btn-primary"
+  style="margin-bottom: 20px"
+  >+ Add New Book</a
+>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Status</th>
+      <th>Issued To</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <td>{{ book['title'] }}</td>
+      <td>{{ book['author'] }}</td>
+      <td>
+        <span
+          style="padding: 5px 10px; border-radius: 3px; 
+                    {% if book['status'] == 'Available' %}background: #d4edda; color: #155724;
+                    {% elif book['status'] == 'Issued' %}background: #fff3cd; color: #856404;
+                    {% elif book['status'] == 'Return Pending' %}background: #d1ecf1; color: #0c5460;
+                    {% else %}background: #f8d7da; color: #721c24;{% endif %}"
+        >
+          {{ book['status'] }}
+        </span>
+      </td>
+      <td>{{ book['issued_to'] or '-' }}</td>
+      <td>
+        <form
+          method="POST"
+          action="{{ url_for('admin_delete_book', book_id=book['id']) }}"
+          style="display: inline"
+          onsubmit="return confirm('Delete this book?');"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" style="text-align: center; color: #999">
+        No books added yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

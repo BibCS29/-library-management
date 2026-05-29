@@ -1,0 +1,142 @@
+{% extends "base.html" %} {% block title %}Dashboard - Library Management
+System{% endblock %} {% block content %}
+<h1>Student Dashboard</h1>
+
+{% if notifications %}
+<div
+  id="studentNotificationDialog"
+  style="
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+  "
+>
+  <div
+    style="
+      max-width: 520px;
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    "
+  >
+    <h2>Library Message</h2>
+    {% for notification in notifications %}
+    <p style="line-height: 1.5; margin-bottom: 15px">
+      {{ notification['message'] }}
+    </p>
+    {% endfor %}
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="document.getElementById('studentNotificationDialog').style.display='none'"
+    >
+      OK
+    </button>
+  </div>
+</div>
+{% endif %}
+
+<div class="stats">
+  <div class="stat-card">
+    <h3>Available Books</h3>
+    <div class="number">{{ available_books }}</div>
+  </div>
+  <div class="stat-card">
+    <h3>Books Issued to You</h3>
+    <div class="number">{{ issued_books }}</div>
+  </div>
+</div>
+
+{% if pending_request %}
+<div
+  style="
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    border-left: 4px solid #ffc107;
+  "
+>
+  Your request for <strong>{{ pending_request['title'] }}</strong> is waiting
+  for admin approval.
+</div>
+{% endif %}
+
+<h2>Quick Actions</h2>
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  "
+>
+  <a href="{{ url_for('student_books') }}" class="btn btn-primary"
+    >Browse Available Books</a
+  >
+  <a href="{{ url_for('student_message_admin') }}" class="btn btn-primary"
+    >Message Admin</a
+  >
+  <a href="{{ url_for('profile') }}" class="btn btn-primary">Edit Profile</a>
+</div>
+
+<h2>Your Activity</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Book Title</th>
+      <th>Issue Date</th>
+      <th>Expected Return</th>
+      <th>Status</th>
+      <th>Return Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for record in history %}
+    <tr>
+      <td>{{ record['book_title'] }}</td>
+      <td>{{ record['issue_date'] }}</td>
+      <td>{{ record['expected_return_date'] }}</td>
+      <td>
+        <span
+          style="padding: 5px 10px; border-radius: 3px; 
+                    {% if record['status'] == 'Active' %}background: #fff3cd; color: #856404;
+                    {% elif record['status'] == 'Return Pending' %}background: #d1ecf1; color: #0c5460;
+                    {% else %}background: #d4edda; color: #155724;{% endif %}"
+        >
+          {{ record['status'] }}
+        </span>
+      </td>
+      <td>{{ record['actual_return_date'] or '-' }}</td>
+      <td>
+        {% if record['status'] == 'Active' %}
+        <a
+          href="{{ url_for('student_return_book', book_id=record['book_id']) }}"
+          class="btn btn-primary"
+          >Request Return</a
+        >
+        {% elif record['status'] == 'Return Pending' %}
+        <span style="color: #999">Awaiting admin</span>
+        {% else %}
+        <span style="color: #999">-</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" style="text-align: center; color: #999">
+        No activity yet
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

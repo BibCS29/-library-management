@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block title %}Apply for Book - Library Management
+System{% endblock %} {% block content %}
+<h1>Apply for Book</h1>
+
+<div style="max-width: 500px">
+  <div
+    style="
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    "
+  >
+    <h2>{{ book['title'] }}</h2>
+    <p><strong>Author:</strong> {{ book['author'] }}</p>
+  </div>
+
+  <form
+    method="POST"
+    action="{{ url_for('student_issue_book', book_id=book['id']) }}"
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+      <label for="return_date">Expected Return Date</label>
+      <input
+        type="date"
+        id="return_date"
+        name="return_date"
+        value="{{ request.form.get('return_date', '') or '' }}"
+        required
+      />
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+      <button type="submit" class="btn btn-primary">Send Request</button>
+      <a href="{{ url_for('student_books') }}" class="btn btn-secondary"
+        >Cancel</a
+      >
+    </div>
+  </form>
+</div>
+{% endblock %}
