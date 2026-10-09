@@ -33,8 +33,6 @@ A comprehensive library management system with **role-based access control**, **
 
 ### 4. **Secrets Management**
 
-- ✅ All sensitive data moved to `.env` file (not in code)
-- ✅ `.env` must be added to `.gitignore` (not committed)
 - ✅ Environment variables for:
   - Flask secret key
   - Session cookie settings
